@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dreamscape: AI ถอดรหัสความฝัน</title>
+  <meta name="description"
+    content="ถอดรหัสความฝัน สำรวจจิตใต้สำนึกตามแนวคิด Carl Jung พร้อมเล่นเพลงบรรเลงปลอดลิขสิทธิ์จาก YouTube อัตโนมัติ">
+
+  <!-- Google Fonts: Noto Sans Thai & Cinzel for mystical title -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            void: '#07050f',
+            cosmos: '#0d081f',
+            deep: '#140c2e',
+            nebula: {
+              400: '#e879f9',
+              500: '#d946ef',
+              600: '#c026d3',
+            },
+            astral: {
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            },
+            lumina: {
+              400: '#38bdf8',
+              500: '#06b6d4',
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans Thai"', 'sans-serif'],
+            display: ['"Cinzel"', 'serif'],
+          },
+          animation: {
+            'float': 'float 7s ease-in-out infinite',
+            'float-slow': 'float 11s ease-in-out infinite reverse',
+            'spin-slow': 'spin 30s linear infinite',
+            'spin-reverse': 'spin 45s linear infinite reverse',
+            'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+            'shimmer': 'shimmer 2.5s infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+              '50%': { transform: 'translateY(-14px) rotate(1deg)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.45', filter: 'blur(35px)' },
+              '50%': { opacity: '0.85', filter: 'blur(55px)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- YouTube Embed Controller API -->
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #07050f;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2a1b4e;
+      border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #8b5cf6;
+    }
+
+    /* Glassmorphism Classes */
+    .glass-panel {
+      background: rgba(19, 13, 38, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(167, 139, 250, 0.15);
+    }
+
+    .glass-panel-glow {
+      background: rgba(23, 15, 48, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(217, 70, 239, 0.28);
+      box-shadow: 0 0 35px -8px rgba(139, 92, 246, 0.25);
+    }
+
+    .glass-input {
+      background: rgba(10, 7, 22, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .glass-input:focus {
+      background: rgba(14, 9, 31, 0.9);
+      border-color: rgba(217, 70, 239, 0.6);
+      box-shadow: 0 0 20px -3px rgba(217, 70, 239, 0.3);
+      outline: none;
+    }
+
+    /* Glowing Text Effect */
+    .neon-text-glow {
+      text-shadow: 0 0 20px rgba(217, 70, 239, 0.6), 0 0 40px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Stardust canvas behind */
+    #stardust-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Gradient Animation for CTA */
+    .cosmic-btn-gradient {
+      background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 50%, #06b6d4 100%);
+      background-size: 200% 200%;
+      animation: cosmicShift 6s ease infinite;
+    }
+
+    @keyframes cosmicShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* ================= Vinyl Record & Equalizer Animations ================= */
+    @keyframes spinVinyl {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .vinyl-disk {
+      animation: spinVinyl 6s linear infinite;
+    }
+
+    .vinyl-paused {
+      animation-play-state: paused !important;
+    }
+
+    @keyframes bounceEq {
+
+      0%,
+      100% {
+        height: 18%;
+      }
+
+      50% {
+        height: 95%;
+      }
+    }
+
+    .eq-bar {
+      transition: height 0.2s ease;
+    }
+
+    .eq-1 {
+      animation: bounceEq 0.75s ease-in-out infinite;
+    }
+
+    .eq-2 {
+      animation: bounceEq 1.05s ease-in-out infinite 0.15s;
+    }
+
+    .eq-3 {
+      animation: bounceEq 0.6s ease-in-out infinite 0.3s;
+    }
+
+    .eq-4 {
+      animation: bounceEq 0.9s ease-in-out infinite 0.1s;
+    }
+
+    .eq-5 {
+      animation: bounceEq 1.25s ease-in-out infinite 0.4s;
+    }
+
+    .eq-paused .eq-bar {
+      animation-play-state: paused !important;
+      height: 20% !important;
+    }
+
+    /* ================= MAGIC REVEAL EFFECT ================= */
+    #magic-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Central star burst */
+    .magic-star {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      animation: magicParticle var(--dur, 1.2s) ease-out var(--delay, 0s) forwards;
+    }
+
+    @keyframes magicParticle {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+      }
+    }
+
+    /* Expanding rings */
+    .magic-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid;
+      animation: magicRing var(--dur, 1s) ease-out var(--delay, 0s) forwards;
+    }
+
+    @keyframes magicRing {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0.9;
+      }
+
+      100% {
+        width: var(--size, 400px);
+        height: var(--size, 400px);
+        opacity: 0;
+      }
+    }
+
+    /* Result section magic reveal */
+    .magic-reveal {
+      animation: magicReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes magicReveal {
+      0% {
+        opacity: 0;
+        transform: scale(0.85) translateY(30px);
+        filter: brightness(2) blur(6px);
+      }
+
+      60% {
+        filter: brightness(1.3) blur(0px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: brightness(1) blur(0px);
+      }
+    }
+
+    /* Floating rune text */
+    .magic-rune {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: floatRune 1.4s ease-out var(--delay, 0s) forwards;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes floatRune {
+      0% {
+        transform: translate(var(--rx), var(--ry)) scale(0.5);
+        opacity: 0;
+      }
+
+      30% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--rx), calc(var(--ry) - 120px)) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    /* Butterfly element */
+    .magic-butterfly {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      animation: butterflyFly var(--dur, 2s) ease-out var(--delay, 0s) forwards;
+      transform-origin: center;
+    }
+
+    .magic-butterfly svg {
+      animation: butterflyFlap 0.25s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 6px var(--color, #d946ef));
+    }
+
+    @keyframes butterflyFlap {
+      0% {
+        transform: scaleX(1);
+      }
+
+      100% {
+        transform: scaleX(0.35);
+      }
+    }
+
+    @keyframes butterflyFly {
+      0% {
+        transform: translate(0, 0) scale(0.3) rotate(var(--rot, 0deg));
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--bx), var(--by)) scale(1.1) rotate(calc(var(--rot, 0deg) + var(--spin, 120deg)));
+        opacity: 0;
+      }
+    }
+
+    /* Sparkle trail */
+    .magic-sparkle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparklePop var(--dur, 0.6s) ease-out var(--delay, 0s) forwards;
+    }
+
+    @keyframes sparklePop {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+
+      60% {
+        transform: scale(1.4);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(0.2);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body
+  class="bg-void text-slate-100 font-sans min-h-screen relative overflow-x-hidden selection:bg-nebula-500 selection:text-white">
+
+  <!-- Interactive Background Canvas (Stardust & Meteors) -->
+  <canvas id="stardust-canvas"></canvas>
+
+  <!-- Dynamic Ambient SVG & Gradient Mesh (Shifts tone based on dream mood) -->
+  <div id="ambient-lights" class="fixed inset-0 pointer-events-none overflow-hidden z-0 transition-all duration-1000">
+    <div id="orb-1"
+      class="absolute -top-32 -left-32 w-96 md:w-[600px] h-96 md:h-[600px] rounded-full bg-nebula-600/30 animate-pulse-glow transition-colors duration-1000">
+    </div>
+    <div id="orb-2"
+      class="absolute top-1/3 -right-32 w-96 md:w-[700px] h-96 md:h-[700px] rounded-full bg-astral-600/25 animate-float-slow transition-colors duration-1000">
+    </div>
+    <div id="orb-3"
+      class="absolute -bottom-40 left-1/4 w-96 md:w-[650px] h-96 md:h-[650px] rounded-full bg-lumina-500/20 animate-pulse-glow transition-colors duration-1000">
+    </div>
+
+    <!-- SVG Vector Grid / Constellation Backdrop -->
+    <svg class="absolute inset-0 w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-pattern" width="60" height="60" patternUnits="userSpaceOnUse">
+          <circle cx="30" cy="30" r="1" fill="#c084fc" opacity="0.6" />
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#a855f7" stroke-width="0.3" stroke-dasharray="2 4" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-pattern)" />
+    </svg>
+  </div>
+
+  <!-- Header Quick Controls -->
+  <aside aria-label="แถบควบคุมมุมบน" class="fixed top-4 right-4 z-50 flex items-center gap-2">
+    <a href="#about-carl-jung"
+      class="glass-panel px-3 py-2 rounded-full text-xs flex items-center gap-1.5 hover:border-astral-500 transition-all text-slate-300 hover:text-white">
+      <i data-lucide="brain" class="w-4 h-4 text-astral-400"></i>
+      <span class="hidden sm:inline">ทฤษฎี Carl Jung</span>
+    </a>
+  </aside>
+
+  <!-- Main Container -->
+  <main class="relative z-10 max-w-5xl mx-auto px-4 py-8 md:py-14 flex flex-col items-center">
+
+    <!-- ==================== HEADER SECTION ==================== -->
+    <header class="text-center mb-10 md:mb-14 relative w-full max-w-3xl">
+      <!-- Mystical Pill Badge -->
+      <div
+        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel text-xs uppercase tracking-widest text-nebula-400 mb-5 border border-nebula-500/30 shadow-[0_0_20px_rgba(217,70,239,0.2)]">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 animate-spin-slow text-nebula-400"></i>
+        <span>AI Jungian Subconscious & YouTube Soundtrack (No Copyright)</span>
+        <i data-lucide="youtube" class="w-3.5 h-3.5 text-red-400"></i>
+      </div>
+
+      <!-- Main Logo / Title -->
+      <h1
+        class="text-5xl sm:text-6xl md:text-7xl font-display font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-violet-200 to-cyan-300 neon-text-glow uppercase mb-4">
+        DREAMSCAPE
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="text-slate-300 text-sm sm:text-base md:text-lg font-light max-w-xl mx-auto leading-relaxed">
+        เปิดประตูสู่จิตใต้สำนึก ถอดรหัสสัญลักษณ์ อารมณ์
+      </p>
+
+      <!-- Sacred Geometry Minimal SVG Decoration -->
+      <div class="flex items-center justify-center gap-3 mt-6 opacity-60">
+        <div class="h-px w-16 bg-gradient-to-r from-transparent to-nebula-400"></div>
+        <svg class="w-6 h-6 text-astral-400 animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.5">
+          <circle cx="12" cy="12" r="9" />
+          <polygon points="12,3 21,18 3,18" />
+          <polygon points="12,21 3,6 21,6" />
+        </svg>
+        <div class="h-px w-16 bg-gradient-to-l from-transparent to-nebula-400"></div>
+      </div>
+    </header>
+
+    <!-- ==================== INPUT FORM SECTION ==================== -->
+    <section
+      class="w-full glass-panel-glow rounded-3xl p-6 sm:p-8 md:p-10 mb-12 relative overflow-hidden transition-all duration-300">
+
+      <!-- Top Decorative Accent -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-500"></div>
+
+      <!-- Preset Inspirations (Quick test chips) -->
+      <div class="mb-6 flex flex-wrap items-center gap-2">
+        <span class="text-xs text-slate-400 flex items-center gap-1 mr-1">
+          <i data-lucide="feather" class="w-3.5 h-3.5 text-astral-400"></i> ลองตัวอย่างความฝัน:
+        </span>
+        <button type="button" onclick="loadPresetDream('flying_ocean')"
+          class="text-xs px-3 py-1.5 rounded-xl bg-violet-950/70 hover:bg-violet-900 border border-violet-700/40 text-violet-200 transition-all hover:scale-105 active:scale-95">
+          ✨ บินเหนือน้ำทะเลเรืองแสง
+        </button>
+        <button type="button" onclick="loadPresetDream('shadow_chase')"
+          class="text-xs px-3 py-1.5 rounded-xl bg-violet-950/70 hover:bg-violet-900 border border-violet-700/40 text-violet-200 transition-all hover:scale-105 active:scale-95">
+          🌑 วิ่งฝ่าพายุกับเงามืด
+        </button>
+        <button type="button" onclick="loadPresetDream('labyrinth')"
+          class="text-xs px-3 py-1.5 rounded-xl bg-violet-950/70 hover:bg-violet-900 border border-violet-700/40 text-violet-200 transition-all hover:scale-105 active:scale-95">
+          🌀 หลงในเขาวงกตกระจก
+        </button>
+      </div>
+
+      <form id="dream-form" onsubmit="handleAnalyze(event)" class="space-y-6">
+
+        <!-- Dream Description Textarea -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label for="dream-input" class="text-sm font-medium text-slate-200 flex items-center gap-2">
+              <i data-lucide="book-open" class="w-4 h-4 text-nebula-400"></i>
+              <span>เล่ารายละเอียดความฝันของคุณ</span>
+              <span class="text-rose-400">*</span>
+            </label>
+            <span id="char-count" class="text-xs text-slate-400">0 ตัวอักษร</span>
+          </div>
+          <textarea id="dream-input" rows="5" required
+            placeholder="คุณเห็นอะไรบ้าง? อยู่ที่ไหน พบเจอใคร รู้สึกอย่างไร หรือมีสิ่งของแปลกตาอันใดปรากฏขึ้นมา... บรรยายได้อย่างอิสระ"
+            class="w-full glass-input rounded-2xl p-4 text-slate-100 placeholder-slate-500 text-sm md:text-base resize-y leading-relaxed"
+            oninput="updateCharCount()"></textarea>
+        </div>
+
+        <!-- Two-column inputs: Mood & API Key -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          <!-- Mood Dropdown -->
+          <div>
+            <label for="mood-select" class="block text-sm font-medium text-slate-200 mb-2 flex items-center gap-2">
+              <i data-lucide="heart" class="w-4 h-4 text-astral-400"></i>
+              <span>ความรู้สึกหลักเมื่อสะดุ้งตื่น</span>
+            </label>
+            <div class="relative">
+              <select id="mood-select"
+                class="w-full glass-input rounded-2xl px-4 py-3 text-slate-100 text-sm md:text-base appearance-none cursor-pointer pr-10">
+                <option value="peaceful" class="bg-cosmos text-slate-200" selected>🌌 สงบสุข / ผ่อนคลาย /
+                  ด่ำดิ่งสู่ห้วงลึก</option>
+                <option value="anxious" class="bg-cosmos text-slate-200">😰 หวาดกลัว / วิตกกังวล / หายใจไม่ทั่วท้อง
+                </option>
+                <option value="confused" class="bg-cosmos text-slate-200">🌀 สับสน / มึนงง / ค้างคาใจ</option>
+                <option value="energetic" class="bg-cosmos text-slate-200">⚡ ตื่นเต้น / มีพลัง / ปลดปล่อยศักยภาพ
+                </option>
+                <option value="melancholy" class="bg-cosmos text-slate-200">🌧️ คิดถึง / โศกเศร้า / อาลัยอาวรณ์</option>
+                <option value="mysterious" class="bg-cosmos text-slate-200">🔮 แปลกประหลาด / รู้สึกว่ามีความหมายซ่อนอยู่
+                </option>
+              </select>
+              <i data-lucide="chevron-down"
+                class="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+            </div>
+          </div>
+
+          <!-- API Key (Optional) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label for="api-key-input" class="text-sm font-medium text-slate-200 flex items-center gap-2">
+                <i data-lucide="key" class="w-4 h-4 text-lumina-400"></i>
+                <span>OpenAI API Key (ไม่บังคับ)</span>
+              </label>
+              <button type="button" onclick="toggleKeyHelp()"
+                class="text-xs text-lumina-400/90 hover:underline flex items-center gap-1">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> วิธีการทำงาน
+              </button>
+            </div>
+
+            <div class="relative">
+              <input type="password" id="api-key-input" placeholder="sk-proj-... (ว่างไว้จะใช้ Jungian Engine ฟรี)"
+                class="w-full glass-input rounded-2xl px-4 py-3 text-slate-100 placeholder-slate-500 text-sm md:text-base pr-12 font-mono">
+              <button type="button" onclick="toggleKeyVisibility()"
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1"
+                title="แสดง/ซ่อนคีย์">
+                <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Help Info Box (Hidden by default) -->
+        <div id="api-help-box"
+          class="hidden p-4 rounded-2xl bg-indigo-950/60 border border-indigo-500/30 text-xs text-indigo-200 space-y-1.5 animate-fadeIn">
+          <p class="font-medium text-indigo-300">💡 เกี่ยวกับระบบวิเคราะห์และเพลงปลอดลิขสิทธิ์จาก YouTube:</p>
+          <ul class="list-disc list-inside space-y-1 text-slate-300">
+            <li><strong>เพลงปลอดลิขสิทธิ์ (No Copyright Music):</strong> คัดสรรเฉพาะเพลงบรรเลงและดนตรีบำบัดจาก YouTube
+              Audio Library / Creative Commons เล่นได้แน่นอน ไม่โดนบล็อกลิขสิทธิ์</li>
+            <li><strong>หากไม่ระบุ API Key:</strong> ระบบจะใช้ <em>Jungian Neural Mock Engine</em> จำลอง 2 วินาที
+              พร้อมเล่นเพลงประจำแม่แบบความฝันจาก YouTube</li>
+            <li><strong>หากระบุคีย์:</strong> จะเชื่อมต่อ OpenAI (GPT-4o-mini)
+              เพื่อวิเคราะห์ความฝันจริงและคัดเลือกดนตรีบรรเลงที่ตรงกับจิตใต้สำนึกของคุณ</li>
+          </ul>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button type="submit" id="submit-btn"
+            class="w-full cosmic-btn-gradient text-white font-semibold py-4 px-8 rounded-2xl shadow-[0_0_30px_rgba(217,70,239,0.35)] hover:shadow-[0_0_45px_rgba(217,70,239,0.6)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 text-base md:text-lg group">
+            <i data-lucide="compass"
+              class="w-5 h-5 group-hover:rotate-45 transition-transform duration-500 text-white"></i>
+            <span id="btn-text">ถอดรหัสความฝัน & เล่นเพลงประกอบจาก YouTube (No Copyright)</span>
+            <i data-lucide="youtube" class="w-5 h-5 text-red-400"></i>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ==================== LOADING STATE OVERLAY ==================== -->
+    <div id="loading-state"
+      class="hidden w-full max-w-xl text-center py-16 px-6 glass-panel rounded-3xl border border-nebula-500/40 mb-12 shadow-[0_0_50px_rgba(139,92,246,0.3)]">
+      <div class="relative w-28 h-28 mx-auto mb-6 flex items-center justify-center">
+        <!-- Outer Glowing Ring -->
+        <div class="absolute inset-0 rounded-full border-2 border-dashed border-nebula-400 animate-spin-slow"></div>
+        <div
+          class="absolute inset-3 rounded-full border-2 border-astral-400/60 border-t-transparent animate-spin-reverse">
+        </div>
+        <div
+          class="w-14 h-14 rounded-full bg-gradient-to-tr from-nebula-500 to-astral-400 flex items-center justify-center shadow-lg shadow-fuchsia-500/50 animate-pulse">
+          <i data-lucide="headphones" class="w-7 h-7 text-white"></i>
+        </div>
+      </div>
+      <h3 id="loading-status-text" class="text-xl font-semibold text-slate-100 mb-2">กำลังเชื่อมต่อคลื่นสมอง Theta...
+      </h3>
+      <p class="text-xs sm:text-sm text-slate-400">ค้นหาแม่แบบจิตใต้สำนึก และกำลังโหลดเพลงปลอดลิขสิทธิ์จาก YouTube</p>
+    </div>
+
+    <!-- ==================== RESULT SECTION ==================== -->
+    <section id="result-section" class="hidden w-full space-y-8 animate-fadeIn">
+
+      <!-- Result Top Banner: Archetype & Mood Alignment -->
+      <div class="glass-panel-glow rounded-3xl p-6 sm:p-8 relative overflow-hidden border-nebula-500/30">
+
+        <!-- Corner Glow Accent -->
+        <div class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-nebula-500/20 blur-3xl pointer-events-none">
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-purple-900/40">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span
+                class="px-3 py-1 rounded-full text-xs font-semibold bg-nebula-500/20 text-nebula-300 border border-nebula-500/30 flex items-center gap-1.5">
+                <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                <span id="res-engine-tag">Jungian AI Analysis</span>
+              </span>
+              <span id="res-mood-tag"
+                class="px-3 py-1 rounded-full text-xs bg-slate-800/80 text-slate-300 border border-slate-700">
+                คลื่นอารมณ์: สงบสุข
+              </span>
+            </div>
+            <h2 id="res-archetype-title"
+              class="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-300 via-purple-200 to-cyan-300">
+              แม่แบบ: The Self (การรวมตัวตนเป็นหนึ่ง)
+            </h2>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center gap-2 self-start md:self-auto">
+            <button onclick="copyFullReport()"
+              class="px-4 py-2.5 rounded-xl glass-panel text-xs text-slate-200 hover:text-white hover:border-astral-400 transition-all flex items-center gap-2 active:scale-95">
+              <i data-lucide="copy" class="w-4 h-4 text-astral-400"></i>
+              <span id="copy-report-text">ก๊อปปี้รายงาน</span>
+            </button>
+            <button onclick="resetDreamForm()"
+              class="px-4 py-2.5 rounded-xl glass-panel text-xs text-slate-200 hover:text-white hover:border-nebula-400 transition-all flex items-center gap-2 active:scale-95">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-nebula-400"></i>
+              <span>วิเคราะห์เรื่องใหม่</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Psychological Summary Grid (Text + Dynamic Sacred Geometry SVG) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-6">
+          <div class="lg:col-span-8 space-y-4">
+            <h3 class="text-lg font-semibold text-violet-300 flex items-center gap-2">
+              <i data-lucide="brain" class="w-5 h-5 text-nebula-400"></i>
+              การวิเคราะห์เชิงจิตวิทยา (Psychological Interpretation)
+            </h3>
+            <p id="res-summary-text" class="text-slate-200 text-sm sm:text-base leading-relaxed font-light">
+              <!-- Summary populated by JS -->
+            </p>
+            <div id="res-deep-dive"
+              class="p-4 rounded-2xl bg-black/40 border border-violet-800/30 text-xs sm:text-sm text-slate-300 leading-relaxed italic">
+              <!-- Carl Jung reflection note -->
+            </div>
+          </div>
+
+          <!-- Dynamic Sacred Geometry SVG Visualizer -->
+          <div
+            class="lg:col-span-4 flex flex-col items-center justify-center p-4 rounded-2xl bg-void/60 border border-violet-900/40 relative">
+            <div class="text-[11px] uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1">
+              <i data-lucide="stars" class="w-3.5 h-3.5 text-nebula-400"></i>
+              <span>Dream Mandala (เรขาคณิตแห่งฝัน)</span>
+            </div>
+
+            <div class="w-48 h-48 relative flex items-center justify-center">
+              <svg id="mandala-svg" class="w-full h-full animate-spin-slow transition-all duration-700"
+                viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="100" r="90" stroke="#8b5cf6" stroke-width="1.2" stroke-dasharray="4 6"
+                  opacity="0.6" />
+                <circle cx="100" cy="100" r="72" stroke="#d946ef" stroke-width="1.5" opacity="0.8" />
+                <circle cx="100" cy="100" r="45" stroke="#06b6d4" stroke-width="1.2" stroke-dasharray="2 3" />
+                <polygon points="100,28 162,136 38,136" stroke="#c084fc" stroke-width="1.5" opacity="0.7" />
+                <polygon points="100,172 38,64 162,64" stroke="#f472b6" stroke-width="1.5" opacity="0.7" />
+                <circle cx="100" cy="100" r="16" fill="#8b5cf6" fill-opacity="0.3" stroke="#a855f7" stroke-width="2" />
+                <circle cx="100" cy="100" r="6" fill="#d946ef" />
+              </svg>
+              <div id="mandala-glow"
+                class="absolute w-16 h-16 rounded-full bg-nebula-500/20 blur-lg pointer-events-none animate-ping"></div>
+            </div>
+
+            <span id="mandala-caption" class="text-[11px] text-violet-300 mt-2 text-center">
+              ความสมดุลระหว่างจิตรู้สำนึกและจิตใต้สำนึก
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== DREAM SOUNDTRACK SECTION (YouTube Embed) ==================== -->
+      <div id="soundtrack-card"
+        class="glass-panel-glow rounded-3xl p-6 sm:p-8 relative overflow-hidden border-nebula-500/40 shadow-[0_0_40px_rgba(217,70,239,0.25)]">
+        <!-- Ambient Corner Glow -->
+        <div id="song-bg-glow"
+          class="absolute -right-24 -bottom-24 w-80 h-80 rounded-full bg-red-500/10 blur-3xl pointer-events-none">
+        </div>
+
+        <div class="space-y-5">
+
+          <!-- Top Row: Vinyl Disc + Metadata & Equalizer -->
+          <div class="flex flex-col sm:flex-row items-center gap-6">
+
+            <!-- Animated Vinyl Record with YouTube Glow -->
+            <div class="relative shrink-0 flex items-center justify-center">
+              <!-- Outer Glow Aura -->
+              <div
+                class="absolute inset-0 rounded-full bg-gradient-to-tr from-red-500 via-rose-400 to-fuchsia-500 blur-xl opacity-35 animate-pulse">
+              </div>
+
+              <!-- Vinyl Disc Body -->
+              <div id="vinyl-disc"
+                class="w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-neutral-950 border-4 border-red-900/50 shadow-2xl relative flex items-center justify-center vinyl-disk">
+                <!-- Concentric Sound Grooves -->
+                <div class="absolute inset-2 rounded-full border border-neutral-700/40"></div>
+                <div class="absolute inset-4 rounded-full border border-neutral-800/60"></div>
+                <div class="absolute inset-7 rounded-full border border-neutral-700/30"></div>
+                <!-- Center YouTube Label -->
+                <div id="vinyl-center"
+                  class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-red-600 via-rose-600 to-red-800 flex flex-col items-center justify-center text-white shadow-inner p-1 text-center">
+                  <i data-lucide="youtube" class="w-5 h-5 text-white"></i>
+                  <span class="text-[8px] font-bold tracking-wider mt-0.5 truncate w-full text-red-100">YOUTUBE</span>
+                </div>
+              </div>
+
+              <!-- Music Indicator Badge -->
+              <div
+                class="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-slate-900 border border-red-500/60 flex items-center justify-center shadow-lg">
+                <i data-lucide="youtube" class="w-3.5 h-3.5 text-red-400 animate-pulse"></i>
+              </div>
+            </div>
+
+            <!-- Song Info & Live Equalizer -->
+            <div class="flex-1 w-full space-y-2 text-center sm:text-left">
+              <div class="flex flex-wrap items-center justify-center sm:justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/15 text-red-300 border border-red-500/40 flex items-center gap-1.5 shadow-[0_0_12px_rgba(239,68,68,0.25)]">
+                    <i data-lucide="youtube" class="w-3.5 h-3.5 text-red-400"></i>
+                    <span>YouTube • เพลงไทย</span>
+                  </span>
+                  <span id="song-archetype-badge"
+                    class="px-2.5 py-0.5 rounded-full text-[11px] bg-violet-950 text-violet-300 border border-violet-800/50">
+                    🎵 The Self & Healing Harmony
+                  </span>
+                </div>
+
+                <!-- Animated Equalizer Spectrum Bars -->
+                <div id="eq-container"
+                  class="flex items-end gap-1 h-6 px-2.5 py-1 rounded-lg bg-black/60 border border-red-900/40">
+                  <div class="w-1 bg-gradient-to-t from-red-500 to-rose-300 rounded-full eq-bar eq-1"></div>
+                  <div class="w-1 bg-gradient-to-t from-red-500 to-rose-300 rounded-full eq-bar eq-2"></div>
+                  <div class="w-1 bg-gradient-to-t from-red-500 to-rose-300 rounded-full eq-bar eq-3"></div>
+                  <div class="w-1 bg-gradient-to-t from-red-500 to-rose-300 rounded-full eq-bar eq-4"></div>
+                  <div class="w-1 bg-gradient-to-t from-red-500 to-rose-300 rounded-full eq-bar eq-5"></div>
+                </div>
+              </div>
+
+              <!-- Title & Artist -->
+              <div>
+                <h3 id="song-title" class="text-2xl sm:text-3xl font-display font-bold text-white tracking-wide">
+                  Chill Lofi Beats (No Copyright)
+                </h3>
+                <p id="song-artist" class="text-sm sm:text-base text-rose-300 font-medium">
+                  Lofi Girl / Royalty Free Music
+                </p>
+              </div>
+
+              <!-- Subconscious Resonance Rationale -->
+              <p id="song-reason"
+                class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light bg-black/35 p-3 rounded-xl border border-red-900/30">
+                ดนตรีผ่อนคลายไร้ลิขสิทธิ์ ช่วยปลอบประโลมจิตใจให้ผ่อนคลาย
+                สะท้อนความสงบเสมือนกำลังลอยอยู่บนผืนน้ำเรืองแสงในฝัน
+              </p>
+            </div>
+          </div>
+
+          <!-- YouTube Embed Player Container -->
+          <div
+            class="relative w-full rounded-2xl overflow-hidden border border-red-800/40 bg-black/60 shadow-2xl aspect-video max-h-64 sm:max-h-72">
+            <iframe id="youtube-embed-iframe"
+              src="https://www.youtube.com/embed/3mYVyVY-lU4?autoplay=0&start=58&enablejsapi=1&rel=0" width="100%"
+              height="100%" frameBorder="0" allowfullscreen=""
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              loading="lazy" class="w-full h-full rounded-2xl"></iframe>
+          </div>
+
+          <!-- Player Bottom Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div class="flex items-center gap-3">
+              <a id="song-youtube-link" href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank"
+                rel="noopener noreferrer"
+                class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-medium text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-red-600/30 active:scale-95 transition-all">
+                <i data-lucide="youtube" class="w-4 h-4 text-white"></i>
+                <span>เปิดดูบน YouTube</span>
+              </a>
+            </div>
+
+            <span id="song-vibe-tag" class="text-xs text-slate-400 italic">
+              ผ่อนคลาย • อบอุ่น • ลอยละล่อง
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Decoded Symbols Section -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-display font-semibold text-slate-100 flex items-center gap-2">
+            <i data-lucide="eye" class="w-5 h-5 text-nebula-400"></i>
+            <span>ถอดรหัสสัญลักษณ์ในความฝัน (Symbol Decryption)</span>
+          </h3>
+          <span class="text-xs text-slate-400">คลิกที่การ์ดเพื่อดูความหมายเชิงลึก</span>
+        </div>
+
+        <div id="symbols-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Dynamically filled with symbol cards -->
+        </div>
+      </div>
+
+      <!-- Color Palette & Emotional Atmosphere -->
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 class="text-xl font-display font-semibold text-slate-100 flex items-center gap-2">
+              <i data-lucide="palette" class="w-5 h-5 text-cyan-400"></i>
+              <span>จานสีอารมณ์ความฝัน (Emotional Color Palette)</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-400">4 เฉดสีที่สะท้อนอุณหภูมิทางอารมณ์ในจิตใจช่วงนี้
+              (คลิกเพื่อก็อปปี้รหัสสี HEX)</p>
+          </div>
+          <span
+            class="text-xs px-3 py-1 rounded-full bg-cyan-950/60 text-cyan-300 border border-cyan-800/40 self-start sm:self-auto">
+            Click to Copy HEX
+          </span>
+        </div>
+
+        <div id="palette-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <!-- Dynamically filled with 4 color swatches -->
+        </div>
+      </div>
+
+      <!-- Mindfulness & Self-care Advice Section -->
+      <div class="glass-panel-glow rounded-3xl p-6 sm:p-8 relative overflow-hidden border-astral-500/30">
+        <div class="flex items-start gap-4">
+          <div
+            class="p-3 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-600/30 shrink-0">
+            <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+          </div>
+          <div class="space-y-3">
+            <h3 class="text-lg sm:text-xl font-semibold text-slate-100">
+              คำแนะนำในการดูแลจิตใจและการนำไปใช้ (Soulcare & Mindfulness)
+            </h3>
+            <div id="res-advice-text" class="text-slate-300 text-sm sm:text-base leading-relaxed space-y-2">
+              <!-- Advice populated here -->
+            </div>
+
+            <div class="pt-2 flex flex-wrap gap-2 text-xs">
+              <span class="px-3 py-1 rounded-full bg-violet-900/40 text-violet-300 border border-violet-800/40">🌿
+                การเขียนบันทึกเจอร์นัล</span>
+              <span class="px-3 py-1 rounded-full bg-violet-900/40 text-violet-300 border border-violet-800/40">🧘
+                ทำสมาธิก่อนเข้านอน</span>
+              <span class="px-3 py-1 rounded-full bg-violet-900/40 text-violet-300 border border-violet-800/40">🌌
+                เคารพเสียงกระซิบข้างใน</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== CARL JUNG THEORY FOOTER EXPLANATION ==================== -->
+    <footer id="about-carl-jung"
+      class="mt-16 pt-10 border-t border-purple-900/40 text-center max-w-3xl text-slate-400 text-xs sm:text-sm space-y-4">
+      <div class="flex items-center justify-center gap-2 text-slate-300 font-semibold">
+        <i data-lucide="sparkles" class="w-4 h-4 text-nebula-400"></i>
+        <span>เกี่ยวกับปรัชญาการวิเคราะห์ความฝันของ Carl Gustav Jung</span>
+      </div>
+      <p class="leading-relaxed font-light text-slate-400">
+        Carl Jung เชื่อว่าความฝันไม่ใช่เรื่องบังเอิญ แต่คือสะพานเชื่อมระหว่าง <strong class="text-violet-300">จิตสำนึก
+          (Ego)</strong>
+        และ <strong class="text-fuchsia-300">จิตใต้สำนึกร่วม (Collective Unconscious)</strong>
+        สัญลักษณ์ในฝันมักสื่อถึงแม่แบบ (Archetypes)
+        เช่น The Shadow (เงามืดที่เก็บกดไว้), The Anima/Animus (พลังขั้วตรงข้ามในตน) และ The Self
+        (ความสมบูรณ์พร้อมของตัวตน)
+      </p>
+      <div class="pt-4 flex items-center justify-center gap-4 text-slate-500 text-xs">
+        <span>© 2026 Dreamscape Subconscious Engine</span>
+        <span>•</span>
+        <span>YouTube Royalty-Free Streaming & Client-Side Local Processing</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ==================== MAGIC REVEAL OVERLAY ==================== -->
+  <div id="magic-overlay"></div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toast"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="glass-panel-glow px-5 py-3 rounded-2xl flex items-center gap-3 border-nebula-400/50 shadow-2xl">
+      <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+      <span id="toast-message" class="text-sm font-medium text-slate-100">คัดลอกรหัสสีแล้ว!</span>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // Initialize Lucide icons on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initStardustCanvas();
+    });
+
+    // ==================== YOUTUBE EMBED PLAYER INTEGRATION ====================
+    let currentSongData = null;
+
+    /**
+     * Swap the YouTube embed iframe src to load the new non-copyrighted track.
+     */
+    function loadYouTubeTrack(youtubeId, startTime) {
+      const iframe = document.getElementById('youtube-embed-iframe');
+      if (!iframe) return;
+      const t = startTime || 0;
+      // No mute — audio unlock is done synchronously before async in handleAnalyze
+      iframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&start=${t}&enablejsapi=1&rel=0`;
+      // Set volume to 50% after iframe loads
+      setTimeout(() => setYouTubeVolume(50), 2500);
+    }
+
+    function setYouTubeVolume(vol) {
+      const iframe = document.getElementById('youtube-embed-iframe');
+      if (!iframe || !iframe.contentWindow) return;
+      iframe.contentWindow.postMessage(JSON.stringify({
+        event: 'command', func: 'setVolume', args: [vol]
+      }), '*');
+    }
+
+    function autoPlayDreamSong(song, mood) {
+      currentSongData = song;
+
+      // Update Player UI elements with song metadata
+      document.getElementById('song-title').textContent = song.title;
+      document.getElementById('song-artist').textContent = song.artist;
+      document.getElementById('song-reason').textContent = song.reason;
+      document.getElementById('song-vibe-tag').textContent = song.vibe || 'ดนตรีเยียวยาใจ • ห้วงลึกจิตใต้สำนึก';
+      document.getElementById('song-archetype-badge').textContent = song.archetypeBadge || '🎵 สอดคล้องคลื่นจิตใต้สำนึก';
+
+      // Update "Open on YouTube" link (link to start at chorus)
+      const ytLink = document.getElementById('song-youtube-link');
+      if (ytLink) ytLink.href = `https://www.youtube.com/watch?v=${song.youtubeId}&t=${song.startTime || 0}s`;
+
+      // Start YouTube playback at chorus
+      loadYouTubeTrack(song.youtubeId, song.startTime || 0);
+
+      // Animate vinyl & EQ
+      const vinylDisc = document.getElementById('vinyl-disc');
+      const eqContainer = document.getElementById('eq-container');
+      if (vinylDisc) vinylDisc.classList.remove('vinyl-paused');
+      if (eqContainer) eqContainer.classList.remove('eq-paused');
+
+      showToast(`🎵 เริ่มท่อนฮุค: "${song.title} - ${song.artist}"`);
+    }
+
+    function setPlayerUIState(playing) {
+      // No-op: YouTube embed handles playback controls; vinyl/EQ animate via CSS
+    }
+
+    // ==================== BUTTERFLY MAGIC REVEAL EFFECT ====================
+    function triggerMagicEffect() {
+      const overlay = document.getElementById('magic-overlay');
+      if (!overlay) return;
+      overlay.innerHTML = '';
+
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+
+      const butterflyColors = [
+        '#d946ef', '#8b5cf6', '#ec4899', '#f59e0b',
+        '#06b6d4', '#a78bfa', '#38bdf8', '#fb7185',
+        '#34d399', '#fbbf24'
+      ];
+
+      // SVG butterfly wing path
+      function makeButterflyEl(color, size) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', size);
+        svg.setAttribute('height', size * 0.75);
+        svg.setAttribute('viewBox', '0 0 100 75');
+        svg.innerHTML = `
+          <ellipse cx="25" cy="30" rx="24" ry="28" fill="${color}" opacity="0.85"/>
+          <ellipse cx="75" cy="30" rx="24" ry="28" fill="${color}" opacity="0.85"/>
+          <ellipse cx="20" cy="55" rx="18" ry="14" fill="${color}" opacity="0.7"/>
+          <ellipse cx="80" cy="55" rx="18" ry="14" fill="${color}" opacity="0.7"/>
+          <ellipse cx="25" cy="28" rx="12" ry="14" fill="white" opacity="0.25"/>
+          <ellipse cx="75" cy="28" rx="12" ry="14" fill="white" opacity="0.25"/>
+          <line x1="50" y1="10" x2="50" y2="70" stroke="#1e0a2e" stroke-width="2.5"/>
+          <ellipse cx="44" cy="8" rx="3" ry="8" fill="#1e0a2e" transform="rotate(-20 44 8)"/>
+          <ellipse cx="56" cy="8" rx="3" ry="8" fill="#1e0a2e" transform="rotate(20 56 8)"/>
+        `;
+        return svg;
+      }
+
+      // 1. Launch 18 butterflies from center
+      for (let i = 0; i < 18; i++) {
+        const angle = (i / 18) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+        const dist = 180 + Math.random() * 280;
+        const bx = Math.cos(angle) * dist;
+        const by = Math.sin(angle) * dist;
+        const color = butterflyColors[i % butterflyColors.length];
+        const size = 28 + Math.random() * 28;
+        const dur = 1.6 + Math.random() * 1.2;
+        const delay = Math.random() * 0.4;
+        const spin = (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 160);
+        const rot = Math.random() * 360;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'magic-butterfly';
+        wrapper.style.cssText = `
+          --bx:${bx}px; --by:${by}px;
+          --dur:${dur}s; --delay:${delay}s;
+          --color:${color}; --rot:${rot}deg; --spin:${spin}deg;
+          left:${cx - size / 2}px; top:${cy - size * 0.375}px;
+        `;
+        wrapper.appendChild(makeButterflyEl(color, size));
+        overlay.appendChild(wrapper);
+
+        // sparkle trail at landing spot
+        for (let s = 0; s < 3; s++) {
+          const sp = document.createElement('div');
+          sp.className = 'magic-sparkle';
+          const sSize = 6 + Math.random() * 10;
+          const sd = delay + dur * 0.7 + s * 0.08;
+          sp.style.cssText = `
+            --dur:0.5s; --delay:${sd}s;
+            width:${sSize}px; height:${sSize}px;
+            background:${color};
+            box-shadow: 0 0 ${sSize * 2}px ${color};
+            left:${cx + bx + (Math.random() - 0.5) * 30}px;
+            top:${cy + by + (Math.random() - 0.5) * 30}px;
+          `;
+          overlay.appendChild(sp);
+        }
+      }
+
+      // 2. Expanding glow rings
+      [0, 0.2, 0.4].forEach((delay, i) => {
+        const ring = document.createElement('div');
+        ring.className = 'magic-ring';
+        const size = 160 + i * 200;
+        ring.style.cssText = `--dur:1.3s; --delay:${delay}s; --size:${size}px;
+          border-color:${butterflyColors[i * 3]}; opacity:0.7;
+          left:${cx}px; top:${cy}px;
+          margin-left:-${size / 2}px; margin-top:-${size / 2}px;`;
+        overlay.appendChild(ring);
+      });
+
+      // 3. Magic-reveal the result section
+      const result = document.getElementById('result-section');
+      if (result) {
+        result.classList.remove('magic-reveal');
+        void result.offsetWidth;
+        result.classList.add('magic-reveal');
+      }
+
+      // Clean up after 3.5s
+      setTimeout(() => { overlay.innerHTML = ''; }, 3500);
+    }
+
+    // Toggle API Key visibility
+    function toggleKeyVisibility() {
+      const input = document.getElementById('api-key-input');
+      const icon = document.getElementById('eye-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleKeyHelp() {
+      const box = document.getElementById('api-help-box');
+      box.classList.toggle('hidden');
+    }
+
+    function updateCharCount() {
+      const input = document.getElementById('dream-input');
+      const counter = document.getElementById('char-count');
+      counter.textContent = `${input.value.length} ตัวอักษร`;
+    }
+
+    // Preset Dream Loader
+    const presetDreams = {
+      flying_ocean: {
+        text: 'ฉันลอยตัวขึ้นเหนือผิวน้ำทะเลสีครามที่เรืองแสงสีม่วงและฟ้าได้เหมือนทางช้างเผือก ไม่มีปีกแต่สามารถเหาะไปข้างหน้าได้ตามใจนึก มีฝูงวาฬขนาดยักษ์แหวกว่ายอยู่บนท้องฟ้าข้างๆ ฉันรู้สึกเบาสบายและเป็นอิสระอย่างที่ไม่เคยเป็นมาก่อนในชีวิตจริง',
+        mood: 'peaceful'
+      },
+      shadow_chase: {
+        text: 'ฉันกำลังวิ่งหนีเงามืดขนาดยักษ์ในป่าทึบที่ต้นไม้ไร้ใบ ฟ้าผ่าฟาดลงมาเป็นสีม่วงนีออน ยิ่งวิ่งทางยิ่งชันจนฉันสะดุดล้มลง แต่เมื่อหันกลับไปเผชิญหน้า เงามืดนั้นกลับเอื้อมมือมาส่งดวงแก้วส่องแสงให้ฉันและไม่ได้ทำร้าย',
+        mood: 'anxious'
+      },
+      labyrinth: {
+        text: 'ฉันพบว่าตัวเองเดินอยู่ในทางเดินที่เต็มไปด้วยกระจกเงา ทุกบานสะท้อนเงาของฉันที่อายุต่างกัน บางบานกำลังหัวเราะ บางบานกำลังร้องไห้ ฉันพยายามหาทางออก แต่ยิ่งเดินกระจกก็ยิ่งสูงขึ้นเรื่อยๆ จนกระทั่งเห็นกุญแจทองเหลืองลอยอยู่กลางอากาศ',
+        mood: 'confused'
+      }
+    };
+
+    function loadPresetDream(key) {
+      const preset = presetDreams[key];
+      if (!preset) return;
+      const dreamInput = document.getElementById('dream-input');
+      const moodSelect = document.getElementById('mood-select');
+
+      dreamInput.value = preset.text;
+      moodSelect.value = preset.mood;
+      updateCharCount();
+
+      // Flash highlight effect
+      dreamInput.classList.add('border-nebula-500');
+      setTimeout(() => dreamInput.classList.remove('border-nebula-500'), 800);
+      showToast('โหลดตัวอย่างความฝันเรียบร้อยแล้ว');
+    }
+
+    // Toast Notification Utility
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    // Copy Color HEX
+    function copyColor(hex, name) {
+      navigator.clipboard.writeText(hex).then(() => {
+        showToast(`คัดลอกสี ${name} (${hex}) แล้ว ✨`);
+      }).catch(() => {
+        showToast(`สี: ${hex}`);
+      });
+    }
+
+    // Copy Complete Dream Report
+    let currentAnalysisData = null;
+    function copyFullReport() {
+      if (!currentAnalysisData) return;
+      const songInfo = currentAnalysisData.song ?
+        `\n🎵 เพลงประกอบความฝัน (YouTube No Copyright): ${currentAnalysisData.song.title} - ${currentAnalysisData.song.artist}\nเหตุผล: ${currentAnalysisData.song.reason}\nลิงก์: https://www.youtube.com/watch?v=${currentAnalysisData.song.youtubeId}\n` : '';
+
+      const report = `🌙 รายงานถอดรหัสความฝัน Dreamscape (Carl Jung Analysis)\n` +
+        `แม่แบบจิตวิทยา: ${currentAnalysisData.archetype}\n` +
+        `อารมณ์: ${currentAnalysisData.moodName}\n` +
+        songInfo +
+        `\nบทวิเคราะห์:\n${currentAnalysisData.summary}\n\n` +
+        `สัญลักษณ์สำคัญ:\n` +
+        currentAnalysisData.symbols.map(s => `- ${s.name}: ${s.meaning} (${s.archetype})`).join('\n') +
+        `\n\nจานสีอารมณ์: ${currentAnalysisData.palette.map(p => `${p.name} [${p.hex}]`).join(', ')}\n\n` +
+        `คำแนะนำดูแลจิตใจ:\n${currentAnalysisData.advice}`;
+
+      navigator.clipboard.writeText(report).then(() => {
+        showToast('คัดลอกรายงานผลการวิเคราะห์ทั้งหมดแล้ว');
+      });
+    }
+
+    function resetDreamForm() {
+      document.getElementById('dream-input').value = '';
+      updateCharCount();
+      document.getElementById('result-section').classList.add('hidden');
+      // Stop YouTube embed by clearing iframe src
+      const ytIframe = document.getElementById('youtube-embed-iframe');
+      if (ytIframe) ytIframe.src = '';
+      const vinylDisc = document.getElementById('vinyl-disc');
+      const eqContainer = document.getElementById('eq-container');
+      if (vinylDisc) vinylDisc.classList.add('vinyl-paused');
+      if (eqContainer) eqContainer.classList.add('eq-paused');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Shift Ambient Background Colors based on mood
+    function updateAmbientMood(mood) {
+      const orb1 = document.getElementById('orb-1');
+      const orb2 = document.getElementById('orb-2');
+      const orb3 = document.getElementById('orb-3');
+
+      const moodColorThemes = {
+        anxious: { orb1: 'bg-rose-600/35', orb2: 'bg-violet-800/30', orb3: 'bg-amber-600/20' },
+        confused: { orb1: 'bg-indigo-600/35', orb2: 'bg-fuchsia-700/30', orb3: 'bg-emerald-600/20' },
+        peaceful: { orb1: 'bg-nebula-600/30', orb2: 'bg-astral-600/25', orb3: 'bg-lumina-500/20' },
+        energetic: { orb1: 'bg-amber-500/35', orb2: 'bg-fuchsia-600/35', orb3: 'bg-cyan-500/25' },
+        melancholy: { orb1: 'bg-blue-700/35', orb2: 'bg-slate-700/35', orb3: 'bg-purple-800/25' },
+        mysterious: { orb1: 'bg-purple-600/40', orb2: 'bg-teal-600/25', orb3: 'bg-pink-600/25' }
+      };
+
+      const theme = moodColorThemes[mood] || moodColorThemes.peaceful;
+      orb1.className = `absolute -top-32 -left-32 w-96 md:w-[600px] h-96 md:h-[600px] rounded-full animate-pulse-glow transition-all duration-1000 ${theme.orb1}`;
+      orb2.className = `absolute top-1/3 -right-32 w-96 md:w-[700px] h-96 md:h-[700px] rounded-full animate-float-slow transition-all duration-1000 ${theme.orb2}`;
+      orb3.className = `absolute -bottom-40 left-1/4 w-96 md:w-[650px] h-96 md:h-[650px] rounded-full animate-pulse-glow transition-all duration-1000 ${theme.orb3}`;
+    }
+
+    // ==================== JUNG MOCK DATA & VERIFIED NO-COPYRIGHT YOUTUBE SONGS ====================
+    const mockJungLibrary = {
+      peaceful: {
+        archetype: "การรวมตัวตนเป็นหนึ่ง (The Self & Individuation)",
+        summary: "จิตใต้สำนึกของคุณกำลังอยู่ในช่วงแห่งการเยียวยาและการเชื่อมประสาน (Individuation) ความฝันที่มีทัศนียภาพกว้างใหญ่ น้ำ หรือการบิน สื่อถึงการที่คุณเริ่มปล่อยวางความขัดแย้งภายใน จิตรู้สำนึกและจิตไร้สำนึกกำลังจับมือกันอย่างกลมกลืน ทำให้คุณค้นพบความสงบแม้ในโลกภายนอกจะมีความวุ่นวาย",
+        deepDive: "«ผู้ใดมองออกไปข้างนอก ผู้นั้นหลับใหล ผู้ใดมองเข้ามาข้างใน ผู้นั้นตื่นรู้» — Carl G. Jung",
+        song: {
+          title: "คู่ชีวิต",
+          artist: "Cocktail",
+          youtubeId: "3mYVyVY-lU4",
+          startTime: 58,
+          archetypeBadge: "🎵 The Self & Healing Harmony",
+          reason: "เพลงที่สื่อถึงความรักอันอบอุ่นและการเดินทางร่วมกัน สะท้อนความสมบูรณ์ของตัวตนที่ค้นพบความสงบผ่านความผูกพัน",
+          vibe: "อบอุ่น • ผูกพัน • สงบสุข"
+        },
+        symbols: [
+          { name: "สายน้ำ / ผืนทะเลเรืองแสง", icon: "waves", archetype: "Collective Unconscious", meaning: "แหล่งกำเนิดแห่งปัญญาทางอารมณ์ การชำระล้างความเหนื่อยล้า และความอุดมสมบูรณ์ในจิตใจ" },
+          { name: "การบิน / ล่องลอยในอากาศ", icon: "wind", archetype: "Transcendence", meaning: "การก้าวข้ามขีดจำกัดเดิมๆ การมองเห็นชีวิตในมุมสูงแบบองค์รวมและเป็นอิสระจากกรอบเดิม" },
+          { name: "แสงดวงดาว / แสงประกาย", icon: "sparkles", archetype: "The Guiding Light", meaning: "สัญชาตญาณภายในที่กำลังนำทางคุณไปสู่เป้าหมายที่แท้จริงของจิตวิญญาณ" }
+        ],
+        palette: [
+          { hex: "#0B132B", name: "Abyssal Indigo", desc: "ห้วงสมาธิลึกซึ้ง" },
+          { hex: "#1C2541", name: "Celestial Blue", desc: "ความสงบเหนือคลื่นลม" },
+          { hex: "#7209B7", name: "Mystic Amethyst", desc: "จิตวิญญาณหยั่งรู้" },
+          { hex: "#4CC9F0", name: "Lucid Horizon", desc: "ความกระจ่างแจ้งในใจ" }
+        ],
+        advice: "รักษาพลังงานแห่งความสงบนี้ไว้ด้วยการทำสมาธิ หรืออยู่ท่ามกลางธรรมชาติในช่วงสุดสัปดาห์นี้ นี่คือจังหวะเวลาที่เหมาะอย่างยิ่งในการริเริ่มโปรเจกต์สร้างสรรค์หรือการตัดสินใจครั้งสำคัญ เพราะจิตใจของคุณมีความโปร่งใสและไม่ถูกบดบังด้วยอคติ",
+        mandalaCaption: "เรขาคณิตแห่งความสมดุลและความสงบนิ่งภายใน"
+      },
+      anxious: {
+        archetype: "เงาในจิตใต้สำนึก (The Shadow Archetype)",
+        summary: "ความฝันนี้กำลังสะท้อน 'The Shadow' หรือส่วนของตัวตน ความรู้สึก หรือความรับผิดชอบที่คุณพยายามผลักไสหรือเก็บซ่อนไว้ในชีวิตตื่น ความรู้สึกวิตกกังวลหรือการถูกไล่ล่ามักไม่ใช่ภัยคุกคามภายนอก แต่เป็นสัญญาณเตือนจากจิตใต้สำนึกว่ามีปัญหาที่คุณกำลังผัดวันประกันพรุ่ง หรือความกลัวที่จะสูญเสียการควบคุมในสิ่งที่สำคัญ",
+        deepDive: "«สิ่งใดก็ตามที่เราต่อต้าน มันจะยังคงอยู่และเติบโตขึ้น แต่สิ่งใดที่เรายอมรับและทำความเข้าใจ จะแปรเปลี่ยนเป็นพลัง» — Carl G. Jung",
+        song: {
+          title: "ความเงียบดังที่สุด",
+          artist: "Getsunova",
+          youtubeId: "TMr6subvuQI",
+          startTime: 54,
+          archetypeBadge: "🎵 The Shadow & Inner Silence",
+          reason: "เพลงที่สะท้อนความเจ็บปวดและความเงียบงันภายในจิตใจ สื่อถึงเงามืดที่ต้องเผชิญหน้าเพื่อก้าวข้ามไป",
+          vibe: "เจ็บปวด • เผชิญหน้า • ก้าวข้าม"
+        },
+        symbols: [
+          { name: "การวิ่งหนี / ห้วงเวลาคับขัน", icon: "footprints", archetype: "The Shadow", meaning: "การหลบเลี่ยงความจริงบางประการ หรือความกลัวต่อการเผชิญหน้ากับความคาดหวังของผู้อื่น" },
+          { name: "ความมืด / สถานที่คับแคบ", icon: "box", archetype: "The Abyss", meaning: "พื้นที่ปิดกั้นทางอารมณ์ที่คุณยังไม่กล้าสำรวจ หรือความรู้สึกโดดเดี่ยวไร้ที่พึ่ง" },
+          { name: "สิ่งของตกหล่น / พังทลาย", icon: "shield-alert", archetype: "Ego Dissolution", meaning: "ความกังวลลึกๆ เกี่ยวกับสถานะ ความมั่นคง หรือภาพลักษณ์ที่กำลังสั่นคลอน" }
+        ],
+        palette: [
+          { hex: "#1C0A35", name: "Midnight Shadow", desc: "จิตใต้สำนึกลึกล้ำ" },
+          { hex: "#6B114D", name: "Crimson Anxiety", desc: "ชีพจรแห่งความตื่นตระหนก" },
+          { hex: "#9D4EDD", name: "Cathartic Violet", desc: "การแปรเปลี่ยนความกลัว" },
+          { hex: "#E0AAFF", name: "Dawn Awakening", desc: "แสงสว่างแห่งการตื่นรู้" }
+        ],
+        advice: "ให้พื้นที่ตนเองในการยอมรับความไม่สมบูรณ์แบบ ลองเขียนสิ่งที่ทำให้คุณกังวลมากที่สุดลงบนกระดาษ แล้วถามตัวเองว่า 'ถ้าสิ่งที่แย่ที่สุดเกิดขึ้นจริง เรามีทางแก้ปัญหาอย่างไร?' การดึงความกลัวขึ้นมาสู่จิตรู้สำนึกจะลดอำนาจของมันลงอย่างน่าอัศจรรย์",
+        mandalaCaption: "การโอบกอดเงามืดและหลอมรวมกลับคืนสู่จิตใจ"
+      },
+      confused: {
+        archetype: "วงกตแห่งตัวตน (The Labyrinth & Anima Mirror)",
+        summary: "สับสนและมึนงงในความฝันเปรียบเสมือนการเดินทางในเขาวงกตแห่งจิตใต้สำนึก คุณกำลังอยู่ในช่วงเปลี่ยนผ่านที่ค่านิยมเดิมเริ่มไม่ตอบโจทย์ แต่ทิศทางใหม่ยังไม่ชัดเจน กระจกหรือทางแยกสัญญะถึง Anima/Animus ที่พยายามกระจกสะท้อนมุมมองชีวิตที่คุณมองข้ามไป",
+        deepDive: "«เขาวงกตไม่ได้มีไว้ให้หลงทาง แต่มีไว้ให้ค้นพบส่วนที่ซ่อนอยู่ของตัวตน» — Carl G. Jung",
+        song: {
+          title: "ทางของฝุ่น",
+          artist: "Atom ชนกันต์",
+          youtubeId: "EEocnHtllJ8",
+          startTime: 60,
+          archetypeBadge: "🎵 The Labyrinth & Searching Soul",
+          reason: "เพลงที่สื่อถึงการเดินทางค้นหาตัวเองท่ามกลางความสับสนและม่านหมอกของชีวิต สะท้อนจิตใต้สำนึกที่กำลังหาทางออก",
+          vibe: "ค้นหา • หลงทาง • ค้นพบ"
+        },
+        symbols: [
+          { name: "เขาวงกต / ทางแยก", icon: "compass", archetype: "Individuation Journey", meaning: "การตัดสินใจครั้งสำคัญในชีวิตที่ต้องใช้สัญชาตญาณมากกว่าแค่ตรรกะเหตุผล" },
+          { name: "กระจกเงา / เงาสะท้อน", icon: "eye", archetype: "Anima/Animus", meaning: "การเผชิญหน้ากับหลากหลายตัวตนภายในและการค้นหาความจริงใจกับตนเอง" },
+          { name: "กุญแจ / วัตถุแปลกตา", icon: "key", archetype: "The Solution Symbol", meaning: "คำตอบหรือทางออกที่อยู่ในมือคุณแล้ว เพียงแต่รอจังหวะเวลาในการนำมาเปิดใช้" }
+        ],
+        palette: [
+          { hex: "#0F172A", name: "Cosmic Obscure", desc: "ความคลุมเครืออันลึกซึ้ง" },
+          { hex: "#334155", name: "Foggy Mirror", desc: "ม่านหมอกแห่งการค้นหา" },
+          { hex: "#C084FC", name: "Intuition Spark", desc: "ประกายสัญชาตญาณ" },
+          { hex: "#38BDF8", name: "Clarity Beam", desc: "แสงแห่งความกระจ่าง" }
+        ],
+        advice: "อย่าเพิ่งรีบร้อนหาคำตอบสำเร็จรูป ให้เวลาตนเองได้อยู่กับความไม่แน่นอนสักพัก การทำบันทึกความฝันอย่างต่อเนื่องและปล่อยให้ไอเดียหลั่งไหลตามธรรมชาติจะช่วยให้กุญแจแห่งการแก้ปัญหาปรากฏขึ้นมาเอง",
+        mandalaCaption: "การคลี่คลายของปมความคิดสู่ปัญญาญาณ"
+      },
+      energetic: {
+        archetype: "การเกิดใหม่และพลังชีวิต (Rebirth & Hero Archetype)",
+        summary: "ความรู้สึกตื่นเต้น มีพลัง หรือการผจญภัยในฝัน สื่อถึงการตื่นขึ้นของ 'Hero Archetype' หรือพลังงานชีวิต (Libido) ในเชิงบวก จิตใต้สำนึกของคุณพร้อมแล้วที่จะทลายกรอบจำกัดเดิมๆ และก้าวเข้าสู่บทใหม่ของชีวิตด้วยความมั่นใจ",
+        deepDive: "«วิกฤตทุกอย่างคือโอกาสในการเกิดใหม่ของจิตวิญญาณ» — Carl G. Jung",
+        song: {
+          title: "ชีวิตยังคงสวยงาม",
+          artist: "Bodyslam",
+          youtubeId: "6B-y0DTL3ws",
+          startTime: 229,
+          archetypeBadge: "🎵 The Hero & Vitality Pulse",
+          reason: "เพลงที่ปลุกพลังชีวิตและให้กำลังใจว่าแม้จะผ่านอะไรมา ชีวิตก็ยังคงสวยงาม สะท้อนพลังแห่งการเกิดใหม่",
+          vibe: "มีพลัง • สู้ต่อไป • สวยงาม"
+        },
+        symbols: [
+          { name: "สายฟ้า / แสงไฟนีออน", icon: "zap", archetype: "Libido Activation", meaning: "พลังงานสร้างสรรค์และความตื่นตัวที่พุ่งทะยานพร้อมเปลี่ยนเป็นผลงานจริง" },
+          { name: "ดวงอาทิตย์ / ประกายไฟ", icon: "sun", archetype: "The Hero's Light", meaning: "ความเจิดจ้าของตัวตน การเป็นผู้นำชีวิตตนเองอย่างภาคภูมิ" },
+          { name: "ยอดเขาสูง / พื้นที่สูง", icon: "mountain", archetype: "Self-Actualization", meaning: "วิสัยทัศน์ที่กว้างไกลและความสำเร็จที่กำลังรอคุณอยู่ข้างหน้า" }
+        ],
+        palette: [
+          { hex: "#31103F", name: "Neon Cosmic Void", desc: "ฉากหลังแห่งความเป็นไปได้" },
+          { hex: "#7B2CBF", name: "Electric Violet", desc: "กระแสจิตตื่นตัว" },
+          { hex: "#F72585", name: "Pulsing Magenta", desc: "หัวใจแห่งความขัดเกลา" },
+          { hex: "#FF9F1C", name: "Solar Awakening", desc: "พลังงานชีวิตเจิดจ้า" }
+        ],
+        advice: "ใช้ช่วงเวลาที่มีพลังงานสูงนี้ในการลงมือทำเป้าหมายที่เคยเลื่อนไว้ ความกล้าหาญและความเป็นตัวเองของคุณจะเป็นแรงดึงดูดสิ่งดีๆ และผู้คนที่คู่ควรเข้ามาในชีวิต",
+        mandalaCaption: "การพุ่งทะยานของพลังชีวิตและการตื่นรู้"
+      },
+      melancholy: {
+        archetype: "การปล่อยวางและเยียวยาใจ (The Great Mother & Healing)",
+        summary: "อารมณ์เศร้า อาลัยอาวรณ์ หรือการคิดถึงในฝัน เป็นกระบวนการทางจิตที่ต้องการการชำระล้าง (Catharsis) จิตใต้สำนึกกำลังช่วยคุณประมวลผลอดีต อาลัยถึงสิ่งที่ผ่านพ้นไป เพื่อเปิดพื้นที่ให้ความอบอุ่นและการเยียวยาใหม่ๆ เข้ามาแทนที่",
+        deepDive: "«น้ำตาคือสายน้ำที่ชำระล้างฝุ่นละอองออกจากดวงตาแห่งจิตวิญญาณ» — Carl G. Jung",
+        song: {
+          title: "ฝนตกไหม",
+          artist: "Three Man Down",
+          youtubeId: "ENnGPkhVu2g",
+          startTime: 48,
+          archetypeBadge: "🎵 Healing Rain & Gentle Longing",
+          reason: "เพลงที่สื่อถึงความคิดถึงและความอ่อนไหวในวันฝนตก สะท้อนอารมณ์โหยหาและการปล่อยวางในห้วงลึกของจิตใจ",
+          vibe: "คิดถึง • อ่อนไหว • ปล่อยวาง"
+        },
+        symbols: [
+          { name: "สายฝน / ละอองหมอก", icon: "cloud-rain", archetype: "Emotional Catharsis", meaning: "การปลดปล่อยน้ำตาและความรู้สึกที่เก็บกดไว้ การชำระล้างจิตใจให้พร้อมรับสิ่งใหม่" },
+          { name: "บ้านเก่า / ภาพถ่ายในอดีต", icon: "mail", archetype: "Nostalgia & Origin", meaning: "ความทรงจำอันทรงคุณค่าที่เป็นรากฐานเติบโตของคุณในปัจจุบัน" },
+          { name: "แสงจันทร์อ่อนๆ", icon: "moon", archetype: "The Great Mother", meaning: "ความรักและการโอบกอดอันอ่อนโยนจากจิตใต้สำนึก" }
+        ],
+        palette: [
+          { hex: "#09122C", name: "Rainy Midnight", desc: "ความสงบในยามค่ำคืน" },
+          { hex: "#172554", name: "Deep Nostalgia", desc: "ห้วงอารมณ์อาลัย" },
+          { hex: "#818CF8", name: "Soft Rain Blue", desc: "การชำระล้างจิตใจ" },
+          { hex: "#E2E8F0", name: "Gentle Moonlight", desc: "การโอบกอดอันอ่อนโยน" }
+        ],
+        advice: "อนุญาตให้ตัวเองรู้สึกเศร้าหรือคิดถึงได้โดยไม่ต้องรีบตัดสินว่ามันคือความอ่อนแอ ความรู้สึกเหล่านี้คือหลักฐานว่าคุณมีหัวใจที่รักและผูกพันอย่างลึกซึ้ง ลองเปิดเพลงบรรเลงเบาๆ หรือโทรหาคนที่คุณคิดถึงและไม่ได้คุยมานาน",
+        mandalaCaption: "สายน้ำแห่งการชำระล้างและการกลับคืนสู่ความสงบ"
+      },
+      mysterious: {
+        archetype: "รหัสลับจิตใต้สำนึก (The Oracle & Unconscious Wisdom)",
+        summary: "ความฝันแปลกประหลาดที่เต็มไปด้วยสัญลักษณ์เหนือจริง คือสัญญาณจาก 'The Oracle Archetype' จิตใต้สำนึกร่วมกำลังสื่อสารผ่านสัญลักษณ์สัจนิยม (Surrealism) เพื่อเตือนให้คุณใช้สัญชาตญาณลึกๆ มากกว่าตรรกะในชีวิตประจำวัน",
+        deepDive: "«สัญลักษณ์ในความฝันคือภาษาของจิตใต้สำนึกที่พูดผ่านภาพถ่าย» — Carl G. Jung",
+        song: {
+          title: "แสงสุดท้าย",
+          artist: "Bodyslam",
+          youtubeId: "SZ6p1Pe-2do",
+          startTime: 0,
+          archetypeBadge: "🎵 The Oracle & Last Light",
+          reason: "เพลงที่สื่อถึงแสงสว่างในความมืดมิด สะท้อนปัญญาญาณที่ซ่อนอยู่ในจิตใต้สำนึกรอวันส่องสว่าง",
+          vibe: "ลึกลับ • ศรัทธา • ตื่นรู้"
+        },
+        symbols: [
+          { name: "ประตูปิดสนิท / บันไดสู่ที่ลึกลับ", icon: "door-closed", archetype: "The Threshold", meaning: "โอกาสใหม่หรือความจริงที่ซ่อนอยู่ ซึ่งรอให้คุณมีความกล้าพอที่จะเปิดออกดู" },
+          { name: "หนังสือโบราณ / รหัสสัญลักษณ์", icon: "book", archetype: "Ancestral Wisdom", meaning: "ปัญญาญาณที่ส่งต่อมาจากประสบการณ์ชีวิต หรือความเข้าใจที่ลึกซึ้งเกินกว่าคำพูดธรรมดา" },
+          { name: "สิ่งลี้ลับ / เงาผู้พิทักษ์", icon: "sparkles", archetype: "The Guardian", meaning: "พลังปกป้องคุ้มครองภายในที่คอยเตือนให้คุณรักษาความซื่อสัตย์ต่อจิตวิญญาณตนเอง" }
+        ],
+        palette: [
+          { hex: "#0F0326", name: "Cosmic Occult", desc: "มิติเร้นลับแห่งจักรวาล" },
+          { hex: "#2E0854", name: "Violet Sanctuary", desc: "วิหารแห่งจิตใต้สำนึก" },
+          { hex: "#7E1F86", name: "Alchemical Plum", desc: "การเล่นแร่แปรธาตุทางจิต" },
+          { hex: "#00F5D4", name: "Etheric Teal", desc: "ประกายวิญญาณอันตื่นรู้" }
+        ],
+        advice: "จงตั้งใจฟังลางสังหรณ์หรือความรู้สึกแรกของคุณในระยะนี้ หากมีสิ่งใดที่รู้สึกติดค้างหรือไม่น่าไว้วางใจ อย่ามองข้าม แนะนำให้พกสมุดบันทึกเล่มเล็กไว้ข้างเตียงเพื่อจดบันทึกความฝันทันทีที่ตื่น เพราะสารเหล่านี้มักเลือนหายไปอย่างรวดเร็ว",
+        mandalaCaption: "วงล้อแห่งรหัสลับและปัญญาญาณที่กำลังเปิดเผย"
+      }
+    };
+
+    // ==================== MAIN ANALYZE HANDLER ====================
+    async function handleAnalyze(e) {
+      e.preventDefault();
+
+      // ====== AUDIO UNLOCK (must be synchronous, before any await) ======
+      // This tricks the browser into allowing audio autoplay after async calls.
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          window._unlockedAudioCtx = ctx; // keep alive
+        }
+      } catch (e) { }
+
+      const dreamText = document.getElementById('dream-input').value.trim();
+      const moodValue = document.getElementById('mood-select').value;
+      const apiKey = document.getElementById('api-key-input').value.trim();
+
+      if (!dreamText) {
+        showToast('กรุณากรอกเรื่องราวความฝันก่อนนะครับ');
+        return;
+      }
+
+      // UI state -> Loading
+      const submitBtn = document.getElementById('submit-btn');
+      const btnText = document.getElementById('btn-text');
+      const loadingState = document.getElementById('loading-state');
+      const resultSection = document.getElementById('result-section');
+      const statusText = document.getElementById('loading-status-text');
+
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+      btnText.textContent = 'กำลังถอดรหัสและเชื่อมต่อ YouTube...';
+
+      resultSection.classList.add('hidden');
+      loadingState.classList.remove('hidden');
+      loadingState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Rotating mystical status texts
+      const loadingPhases = [
+        'กำลังเชื่อมต่อคลื่นสมอง Theta...',
+        'กำลังค้นหาแม่แบบจิตใต้สำนึก (Jungian Archetypes)...',
+        'กำลังค้นหาเพลงปลอดลิขสิทธิ์จาก YouTube...',
+        'กำลังเตรียมเล่นเพลงประจำความฝัน...'
+      ];
+      let phaseIndex = 0;
+      const phaseInterval = setInterval(() => {
+        phaseIndex = (phaseIndex + 1) % loadingPhases.length;
+        statusText.textContent = loadingPhases[phaseIndex];
+      }, 650);
+
+      try {
+        let finalData = null;
+
+        if (apiKey) {
+          // Real OpenAI API Call
+          try {
+            finalData = await callOpenAI(dreamText, moodValue, apiKey);
+            finalData.engineType = 'OpenAI GPT-4o Engine';
+          } catch (apiErr) {
+            console.warn('OpenAI API failed, falling back to Jungian Mock Engine:', apiErr);
+            showToast('API มีปัญหา ระบบสลับมาใช้ Jungian Engine จำลองให้อัตโนมัติ');
+            finalData = generateJungianMock(dreamText, moodValue);
+            finalData.engineType = 'Jungian AI Engine (Fallback)';
+          }
+        } else {
+          // Simulate 2-second loading for mystical anticipation
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          finalData = generateJungianMock(dreamText, moodValue);
+          finalData.engineType = 'Jungian Archetype Engine';
+        }
+
+        clearInterval(phaseInterval);
+        loadingState.classList.add('hidden');
+
+        // Render Results & Auto-play the song from YouTube!
+        renderResults(finalData, moodValue);
+
+        resultSection.classList.remove('hidden');
+        triggerMagicEffect(); // 🦋 Butterfly magic reveal!
+
+        // Scroll deeper so the full result content is visible
+        setTimeout(() => {
+          const top = resultSection.getBoundingClientRect().top + window.scrollY - 60;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }, 200);
+
+      } catch (err) {
+        clearInterval(phaseInterval);
+        loadingState.classList.add('hidden');
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้ง');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+        btnText.textContent = 'ถอดรหัสความฝัน & เล่นเพลงไทยประกอบ 🎵';
+      }
+    }
+
+    // Generate smart mock data blended with user keywords
+    function generateJungianMock(dreamText, mood) {
+      const base = mockJungLibrary[mood] || mockJungLibrary.peaceful;
+      const moodNames = {
+        peaceful: 'สงบสุข / ผ่อนคลาย',
+        anxious: 'หวาดกลัว / วิตกกังวล',
+        confused: 'สับสน / มึนงง',
+        energetic: 'มีพลัง / ตื่นเต้น',
+        melancholy: 'คิดถึง / โศกเศร้า',
+        mysterious: 'ลึกลับ / แปลกประหลาด'
+      };
+
+      // Extract potential dynamic symbols from dream text if present
+      const customSymbols = [...base.symbols];
+      if (dreamText.includes('น้ำ') || dreamText.includes('ทะเล') || dreamText.includes('ฝน')) {
+        customSymbols[0] = { name: "ธาตุน้ำ / มหาสมุทร", icon: "waves", archetype: "Unconscious Depth", meaning: "อารมณ์ความรู้สึกที่ลึกซึ้ง การเยียวยา หรือความปรารถนาในการเริ่มต้นใหม่" };
+      }
+      if (dreamText.includes('ประตู') || dreamText.includes('บ้าน') || dreamText.includes('ห้อง')) {
+        customSymbols[1] = { name: "ห้อง / ประตูบานใหม่", icon: "door-closed", archetype: "Hidden Psyche", meaning: "แง่มุมของตัวตนที่คุณยังไม่เคยสำรวจ หรือโอกาสชีวิตใหม่ที่กำลังรอการตัดสินใจ" };
+      }
+      if (dreamText.includes('บิน') || dreamText.includes('นก') || dreamText.includes('ฟ้า')) {
+        customSymbols[2] = { name: "การบิน / ท้องนภากว้าง", icon: "wind", archetype: "Transcendence", meaning: "ความปรารถนาในอิสรภาพ การหลุดพ้นจากพันธนาการทางความคิดเดิมๆ" };
+      }
+
+      return {
+        archetype: base.archetype,
+        moodName: moodNames[mood] || mood,
+        summary: base.summary,
+        deepDive: base.deepDive,
+        song: base.song,
+        symbols: customSymbols,
+        palette: base.palette,
+        advice: base.advice,
+        mandalaCaption: base.mandalaCaption
+      };
+    }
+
+    // Call OpenAI API with Structured Output (Including Thai Dream Song)
+    async function callOpenAI(dreamText, mood, apiKey) {
+      const moodPrompts = {
+        peaceful: 'ผู้ฝันตื่นมาด้วยความสงบสุขผ่อนคลาย',
+        anxious: 'ผู้ฝันตื่นมาด้วยความวิตกกังวลหรือกลัว',
+        confused: 'ผู้ฝันตื่นมาด้วยความสับสนมึนงง',
+        energetic: 'ผู้ฝันตื่นมาด้วยความกระตือรือร้นมีพลัง',
+        melancholy: 'ผู้ฝันตื่นมาด้วยความโศกเศร้าคิดถึง',
+        mysterious: 'ผู้ฝันรู้สึกว่าความฝันลึกลับมีความหมายซ่อนอยู่'
+      };
+
+      const systemPrompt = `คุณคือนักจิตวิทยาเชิงวิเคราะห์สาย Carl Gustav Jung ผู้เชี่ยวชาญการถอดรหัสความฝันและจิตใต้สำนึก
+โปรดวิเคราะห์ความฝันที่ผู้ใช้ส่งมาโดยอิงจากทฤษฎี Archetypes, The Shadow, Anima/Animus, The Self และ Collective Unconscious
+พร้อมทั้งคัดเลือก "เพลงไทย" จากศิลปินไทยชื่อดังบน YouTube ที่สอดรับกับอารมณ์และสัญญะของความฝันนี้มากที่สุด (เช่น คู่ชีวิต-Cocktail, ความเงียบดังที่สุด-Getsunova, ทางของฝุ่น-Atom ชนกันต์, ชีวิตยังคงสวยงาม-Bodyslam, ฝนตกไหม-Three Man Down, แสงสุดท้าย-Bodyslam, คิดถึง-Palmy, อยู่ตรงนี้ นานกว่านี้-Getsunova ฯลฯ)
+ให้ตอบกลับเป็น JSON ภาษาไทยอย่างเคร่งครัดตามโครงสร้างดังนี้เท่านั้น (ห้ามใส่ Markdown code block หรือข้อความอื่นนอกเหนือจาก JSON):
+{
+  "archetype": "ชื่อแม่แบบจิตวิทยา เช่น 'การรวมตัวตนเป็นหนึ่ง (The Self)'",
+  "moodName": "ชื่อสรุปอารมณ์",
+  "summary": "บทวิเคราะห์ความฝันเชิงจิตวิทยาอย่างละเอียดและลึกซึ้ง 3-4 ประโยค",
+  "deepDive": "วาทะหรือข้อคิดทางจิตวิทยาเชิงลึกที่เกี่ยวข้องกับความฝันนี้ 1 ประโยค",
+  "song": {
+    "title": "ชื่อเพลงไทยที่เข้ากับอารมณ์ฝัน",
+    "artist": "ชื่อศิลปินไทย",
+    "youtubeId": "รหัส YouTube Video ID (เช่น d_r1p5065aU, 2_t_5S-Vv3g, EEocnHtllJ8, q4Nagt1oBW0, m9h12tuUqGo, bRpZzTkO9kc)",
+    "archetypeBadge": "🎵 ชื่อแม่แบบและอารมณ์เพลง",
+    "reason": "เหตุผลที่บทเพลงไทยนี้สอดคล้องกับจิตใต้สำนึกและความฝันของคุณ 1-2 ประโยค",
+    "vibe": "3 คำนิยาม เช่น อบอุ่น • ผูกพัน • สงบสุข"
+  },
+  "symbols": [
+    {"name": "สัญลักษณ์ 1 ที่พบในฝัน", "icon": "sparkles", "archetype": "ชื่อ Archetype", "meaning": "ความหมายทางจิตใต้สำนึก"},
+    {"name": "สัญลักษณ์ 2 ที่พบในฝัน", "icon": "eye", "archetype": "ชื่อ Archetype", "meaning": "ความหมายทางจิตใต้สำนึก"},
+    {"name": "สัญลักษณ์ 3 ที่พบในฝัน", "icon": "key", "archetype": "ชื่อ Archetype", "meaning": "ความหมายทางจิตใต้สำนึก"}
+  ],
+  "palette": [
+    {"hex": "#HEX1", "name": "ชื่อสีอารมณ์ 1", "desc": "คำอธิบายความรู้สึก"},
+    {"hex": "#HEX2", "name": "ชื่อสีอารมณ์ 2", "desc": "คำอธิบายความรู้สึก"},
+    {"hex": "#HEX3", "name": "ชื่อสีอารมณ์ 3", "desc": "คำอธิบายความรู้สึก"},
+    {"hex": "#HEX4", "name": "ชื่อสีอารมณ์ 4", "desc": "คำอธิบายความรู้สึก"}
+  ],
+  "advice": "คำแนะนำในการดูแลจิตใจและการนำข้อคิดจากความฝันไปปรับใช้ในชีวิตจริงอย่างสร้างสรรค์",
+  "mandalaCaption": "คำบรรยายสั้นๆ สำหรับความสมดุลของจิตใจ เช่น 'ความสอดคล้องระหว่างจิตรู้สำนึกและสัญชาตญาณ'"
+}`;
+
+      const userContent = `ความฝัน: "${dreamText}"\nอารมณ์ตอนสะดุ้งตื่น: ${moodPrompts[mood] || mood}`;
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userContent }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.7
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0].message.content;
+      const parsed = JSON.parse(content);
+
+      // Fallback to verified YouTube IDs if AI returns empty or invalid
+      const base = mockJungLibrary[mood] || mockJungLibrary.peaceful;
+      if (!parsed.song || !parsed.song.youtubeId) {
+        parsed.song = {
+          ...base.song,
+          ...(parsed.song || {})
+        };
+        if (!parsed.song.youtubeId) {
+          parsed.song.youtubeId = base.song.youtubeId;
+        }
+      }
+
+      return parsed;
+    }
+
+    // Render results on page and trigger YouTube playback
+    function renderResults(data, mood) {
+      currentAnalysisData = data;
+
+      // Update Top Tags & Titles
+      document.getElementById('res-engine-tag').textContent = data.engineType || 'Jungian Archetype Engine';
+      document.getElementById('res-mood-tag').textContent = `คลื่นอารมณ์: ${data.moodName || mood}`;
+      document.getElementById('res-archetype-title').textContent = data.archetype;
+      document.getElementById('res-summary-text').textContent = data.summary;
+      document.getElementById('res-deep-dive').textContent = data.deepDive || '';
+      document.getElementById('res-advice-text').textContent = data.advice;
+      document.getElementById('mandala-caption').textContent = data.mandalaCaption || 'ความสมดุลในมิติแห่งจิตใต้สำนึก';
+
+      // Update Dynamic Ambient Background Tone
+      updateAmbientMood(mood);
+
+      // ================= YOUTUBE EMBED PLAYBACK =================
+      const songToPlay = data.song || (mockJungLibrary[mood] || mockJungLibrary.peaceful).song;
+      autoPlayDreamSong(songToPlay, mood);
+
+      // Render Symbol Cards
+      const symbolsGrid = document.getElementById('symbols-grid');
+      symbolsGrid.innerHTML = '';
+
+      const defaultIcons = ['sparkles', 'compass', 'eye', 'key', 'shield', 'feather', 'moon', 'flame'];
+      data.symbols.forEach((sym, idx) => {
+        const iconName = sym.icon || defaultIcons[idx % defaultIcons.length];
+        const card = document.createElement('div');
+        card.className = 'glass-panel rounded-2xl p-5 hover:border-nebula-500/60 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(217,70,239,0.15)] flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="p-2.5 rounded-xl bg-violet-900/50 text-nebula-400 border border-violet-700/40">
+                <i data-lucide="${iconName}" class="w-5 h-5"></i>
+              </span>
+              <span class="text-[11px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-800 text-astral-300 border border-slate-700">
+                ${sym.archetype || 'Archetype'}
+              </span>
+            </div>
+            <h4 class="text-base font-semibold text-slate-100 mb-1.5">${sym.name}</h4>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">${sym.meaning}</p>
+          </div>
+        `;
+        symbolsGrid.appendChild(card);
+      });
+
+      // Render 4-Color Swatches
+      const paletteGrid = document.getElementById('palette-grid');
+      paletteGrid.innerHTML = '';
+
+      data.palette.forEach(color => {
+        const swatch = document.createElement('div');
+        swatch.className = 'group glass-panel rounded-2xl p-3 hover:border-astral-400/60 transition-all duration-300 cursor-pointer text-center';
+        swatch.onclick = () => copyColor(color.hex, color.name);
+        swatch.innerHTML = `
+          <div class="w-full h-20 rounded-xl mb-3 shadow-inner transition-transform group-hover:scale-105 duration-300 relative flex items-center justify-center overflow-hidden" style="background-color: ${color.hex}">
+            <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white text-[11px] px-2 py-1 rounded-md flex items-center gap-1">
+              <i data-lucide="copy" class="w-3 h-3"></i> ก็อปปี้
+            </span>
+          </div>
+          <div class="text-xs font-semibold text-slate-200 truncate">${color.name}</div>
+          <div class="text-[11px] font-mono text-slate-400 group-hover:text-nebula-400 transition-colors uppercase">${color.hex}</div>
+          <div class="text-[10px] text-slate-500 mt-0.5 truncate">${color.desc || ''}</div>
+        `;
+        paletteGrid.appendChild(swatch);
+      });
+
+      // Update Mandala SVG colors dynamically
+      if (data.palette && data.palette.length >= 3) {
+        const svg = document.getElementById('mandala-svg');
+        const circles = svg.querySelectorAll('circle');
+        const polygons = svg.querySelectorAll('polygon');
+        if (circles[0]) circles[0].setAttribute('stroke', data.palette[0].hex);
+        if (circles[1]) circles[1].setAttribute('stroke', data.palette[1].hex);
+        if (circles[2]) circles[2].setAttribute('stroke', data.palette[2].hex);
+        if (polygons[0]) polygons[0].setAttribute('stroke', data.palette[1].hex);
+        if (polygons[1]) polygons[1].setAttribute('stroke', data.palette[2].hex);
+      }
+
+      // Re-create lucide icons for newly appended nodes
+      lucide.createIcons();
+    }
+
+    // ==================== STARDUST CANVAS PARTICLES ====================
+    function initStardustCanvas() {
+      const canvas = document.getElementById('stardust-canvas');
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const stars = [];
+      const numStars = Math.floor((width * height) / 9000);
+
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 1.4 + 0.4,
+          alpha: Math.random() * 0.7 + 0.2,
+          speed: Math.random() * 0.3 + 0.05,
+          drift: (Math.random() - 0.5) * 0.15,
+          color: Math.random() > 0.4 ? '#e879f9' : '#818cf8'
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < stars.length; i++) {
+          const star = stars[i];
+          star.y -= star.speed;
+          star.x += star.drift;
+
+          // Wrap around screen
+          if (star.y < 0) {
+            star.y = height;
+            star.x = Math.random() * width;
+          }
+          if (star.x < 0) star.x = width;
+          if (star.x > width) star.x = 0;
+
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          ctx.fillStyle = star.color;
+          ctx.globalAlpha = star.alpha;
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = star.color;
+          ctx.fill();
+        }
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+  </script>
+</body>
+
+</html>
